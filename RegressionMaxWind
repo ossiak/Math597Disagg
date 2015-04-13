@@ -30,8 +30,12 @@ plot(TestingSet$MinPressure,TestingSet$MaxWind, main = "Regression Model Scatter
 lines(TestingSet$MinPressure,MaxWind_Estimate, col = "red")
 
 #Plot histogram of error plot and fit a gaussian to it
-hist(Error, prob = TRUE)
+hist(Error, prob = TRUE, xlab = "Error", ylab = "Probability Density", main = "Histogram of Error")
 curve(dnorm(x, mean = mean_Error, sd = sqrt(var_Error)),col="darkblue",lwd = 2, add=TRUE, yaxt="n")
+
+#Q-Q Plot to determine if normalized errors
+qqnorm(Error)
+qqline(Error)
 
 ## Calculate the Normalized Root Mean Squared Error (NRMSE)
 NRMSE = sqrt(mean((Error.norm)^2))
@@ -41,3 +45,7 @@ summary(RegressionModel_MaxWind)
 ##################################
 #DONE REGRESSION ANALYSIS MAXWIND#
 ##################################
+
+
+
+
