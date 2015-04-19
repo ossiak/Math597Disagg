@@ -1,0 +1,51 @@
+## Regression Analysis on MaxWind
+N = length(hurdat4$ID)
+NUMBER_OF_TRAININGS = 0.8*length(hurdat4$ID) ## 80% of entire data
+
+## Construct training & testing sets
+TrainingSet = hurdat4[1:NUMBER_OF_TRAININGS,] 
+TestingSet = hurdat4[(NUMBER_OF_TRAININGS+1):N,]
+
+#Train regression model
+RegressionModel_MaxWind = lm(MaxWind ~ MinPressure,TrainingSet)
+Coefficients = coef(RegressionModel_MaxWind)
+
+#Use model coefficients to create linear model estimate of MaxWind speeds
+MaxWind_Estimate = Coefficients[1] + Coefficients[2]*TestingSet$MinPressure
+
+
+#Calculate the error with actual data
+Error = MaxWind_Estimate - TestingSet$MaxWind ## Calculate regression model error 
+#Normalized Error
+Error.norm = (Error - mean(Error))/var(Error)
+
+
+## Error Analysis
+
+mean_Error = mean(Error)
+var_Error = var(Error)
+
+#Plot the scatterplot of regression model
+plot(TestingSet$MinPressure,TestingSet$MaxWind, main = "Regression Model Scatter Plot", xlab = "MinPressure", ylab = "MaxWind") 
+lines(TestingSet$MinPressure,MaxWind_Estimate, col = "red")
+
+#Plot histogram of error plot and fit a gaussian to it
+hist(Error, prob = TRUE, xlab = "Error", ylab = "Probability Density", main = "Histogram of Error")
+curve(dnorm(x, mean = mean_Error, sd = sqrt(var_Error)),col="darkblue",lwd = 2, add=TRUE, yaxt="n")
+
+#Q-Q Plot to determine if normalized errors
+qqnorm(Error)
+qqline(Error)
+
+## Calculate the Normalized Root Mean Squared Error (NRMSE)
+NRMSE = sqrt(mean((Error.norm)^2))
+
+summary(RegressionModel_MaxWind)
+
+##################################
+#DONE REGRESSION ANALYSIS MAXWIND#
+##################################
+
+
+
+

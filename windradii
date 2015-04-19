@@ -1,0 +1,35 @@
+# WR34NE  WR34SE	WR34SW	WR34NW	WR50NE	WR50SE	WR50SW	WR50NW	WR64NE	WR64SE	WR64SW	WR64NW
+
+#Read in hurdat3
+hurdat3 <- read.csv("C:/Users/cnguy_000/Desktop/hurdat3.csv")
+
+#Minor changes to hurdat3 data frame
+hurdat3$Name = gsub(" ","", hurdat3$Name)
+colnames(hurdat3)[1] = "RowID"
+hurdat3$ID = as.character(hurdat3$ID)
+
+#Only looking at storms whose wind radii > 0 for all speeds
+hurdat4 = subset(hurdat3,
+                 hurdat3$WR34NE > 0 & hurdat3$WR34SE > 0 & hurdat3$WR34SW > 0 & hurdat3$WR34NW > 0)
+
+
+#Changing LAT/LON to numeric values 
+hurdat4$LAT = as.numeric(substr(gsub(" ","", as.character(hurdat4$LAT)), 1, nchar(gsub(" ","", as.character(hurdat4$LAT))) -1))
+hurdat4$LON = as.numeric(substr(gsub(" ","", as.character(hurdat4$LON)), 1, nchar(gsub(" ","", as.character(hurdat4$LON))) -1))*(-1) #Longitude values this side of PM are negative
+
+#Read in Kara's file
+HurricanePlatformLatLon <- read.csv("C:/Users/cnguy_000/Desktop/HurricanePlatformLatLon.csv")
+
+#Minor changes to Kara's file
+HurricanePlatformLatLon$ID = as.character(HurricanePlatformLatLon$ID)
+colnames(HurricanePlatformLatLon) = c("ID", "PLATFORM","PLATFORM_LAT","PLATFORM_LON")
+
+#Join the two tables hurdat4 & HurricanePlatformLatLon together
+HurricaneRadiiPlatform = merge(hurdat4,HurricanePlatformLatLon)
+
+#To better suit the needs, we will extract only necessary data from this dataset
+HurricaneRadiiPlatform = HurricaneRadiiPlatform[,c("ID", "Name", "Date", "Time", "LAT", "LON", "MaxWind", "MinPressure", "WR34NE", "WR34SE", "WR34SW", "WR50NW","WR50NE", "WR50SE", "WR50SW", "WR50NW","WR64NE", "WR64SE", "WR64SW", "WR64NW", "PLATFORM", "PLATFORM_LAT", "PLATFORM_LON")]
+
+#Write dataframes to CSV
+write.csv(hurdat4, file = "hurdat4.csv")
+write.csv(HurricaneRadiiPlatform, file = "HurricaneRadiiPlatform.csv")
